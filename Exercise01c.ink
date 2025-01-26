@@ -15,35 +15,70 @@ This exercise will demonstrate the following in the example video:
  - Check the value of a variable and have it do something
 */
 
+// Variable declarations
+VAR torch_pickup = false
+VAR has_sword = false
+VAR monster_defeated = false
+VAR gold_collected = 0
+VAR stamina = 75.0
 
+-> cave_entrance
 
--> cave_mouth
+== cave_entrance ==
+You stand at the entrance of a dark cave. {not torch_pickup:There is a torch lying on the ground.} 
+The cave extends to the north and south.
 
-== cave_mouth ==
-You are at the enterance to a cave. {not torch_pickup:There is a torch on the floor.} The cave extends to the east and west.
++ [Enter the north tunnel] -> north_tunnel
++ [Enter the south tunnel] -> south_tunnel
+* {not torch_pickup} [Pick up the torch] -> torch_pickup
++ [Check your status] -> status
 
+== north_tunnel ==
+You are in the north tunnel. The air feels damp, and you hear distant growling.
+* {torch_pickup} [Light your torch] -> north_tunnel_lit
++ [Go Back] -> cave_entrance
 
+== north_tunnel_lit ==
+The light reveals a fierce cave monster blocking your path!
+{has_sword: 
+    * {not monster_defeated} [Fight the monster] -> fight_monster
+}
++ [Retreat to the entrance] -> cave_entrance
 
-+ [Take the east tunnel] -> east_tunnel
-+ [Take the west tunnel] -> west_tunnel
-* [Pick up the torch] -> torch_pickup
+== fight_monster ==
+You bravely fight the monster with your sword!
+~ monster_defeated = true
+~ stamina -= 20.0
+The monster is defeated, but you're feeling tired.
++ [Search for treasure] -> treasure_chamber
++ [Go Back] -> north_tunnel_lit
 
-== east_tunnel ==
-You are in the east tunnel. It is very dark, you can't see anything.
-* {torch_pickup} [Light Torch] -> east_tunnel_lit
-+ [Go Back] -> cave_mouth
--> END
+== treasure_chamber ==
+You find a stash of gold hidden in the cave.
+~ gold_collected += 200
++ [Go Back] -> north_tunnel_lit
 
-== west_tunnel ==
-You are in the west
-+ [Go Back] -> cave_mouth
--> END
+== south_tunnel ==
+You explore the south tunnel and discover an old weapon rack.
+* {not has_sword} [Take a sword] -> take_sword
++ [Go Back] -> cave_entrance
+
+== take_sword ==
+You pick up a rusty sword. It might come in handy.
+~ has_sword = true
++ [Go Back] -> south_tunnel
+
+== status ==
+Your current status:
+{torch_pickup: Torch - provides light.}
+{has_sword: Sword - useful for fighting.}
+Gold: {gold_collected}
+Stamina: {stamina}
++ [Return to the entrance] -> cave_entrance
 
 === torch_pickup ===
-You now have a torch. May it light the way.
-* [Go Back] -> cave_mouth
--> END
+You now have a torch. This should help illuminate dark areas.
+~ torch_pickup = true
++ [Go Back] -> cave_entrance
 
-== east_tunnel_lit ==
-The light of your torch glints off of the thousands of coins in the room.
 -> END
